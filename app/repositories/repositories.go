@@ -17,3 +17,19 @@ type AquacultureFarmsRepository interface {
 	Update(afReq models.AquacultureFarmsRequest, id string) (models.AquacultureFarms, error)
 	Delete(id string) error
 }
+
+type ProductTypeRepoistory interface {
+	GetAll() ([]models.ProductType, error)
+	GetByID(id string) (models.ProductType, error)
+	Create(ptReq models.ProductTypeRequest) (models.ProductType, error)
+	Update(ptReq models.ProductTypeRequest, id string) (models.ProductType, error)
+	Delete(id string) error
+}
+
+type FarmTypeRepoistory interface {
+	GetAll() ([]models.FarmType, error)
+	GetByID(id string) (models.FarmType, error)
+	Create(ftReq models.FarmTypeRequest) (models.FarmType, error)
+	Update(ftReq models.FarmTypeRequest, id string) (models.FarmType, error)
+	Delete(id string) error
+}

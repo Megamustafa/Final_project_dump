@@ -49,7 +49,7 @@ func (pc *ProductController) GetByID(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, models.Response[models.Product]{
 		Status:  "success",
-		Message: "content found",
+		Message: "product found",
 		Data:    product,
 	})
 }
@@ -78,13 +78,13 @@ func (pc *ProductController) Create(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, models.Response[string]{
 			Status:  "failed",
-			Message: "failed to create a a product",
+			Message: "failed to create a product",
 		})
 	}
 
 	return c.JSON(http.StatusCreated, models.Response[models.Product]{
 		Status:  "success",
-		Message: "content created",
+		Message: "product created",
 		Data:    product,
 	})
 }
@@ -134,7 +134,7 @@ func (pc *ProductController) Delete(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, models.Response[string]{
 			Status:  "failed",
-			Message: "failed to delete product",
+			Message: "failed to delete a product",
 		})
 	}
 
