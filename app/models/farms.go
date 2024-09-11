@@ -33,5 +33,5 @@ type Farm struct {
 	FarmTypeID  uint           `json:"farm_type_id"`
 	Description string         `json:"description"`
 	Price       int            `json:"price"`
-	FarmType    FarmType       `json:"farm"`
+	FarmType    FarmType       `json:"farm_type"`
 }

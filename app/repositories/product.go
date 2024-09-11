@@ -33,7 +33,7 @@ func (pr *ProductRepositoryImpl) GetByID(id string) (models.Product, error) {
 
 func (pr *ProductRepositoryImpl) Create(productReq models.ProductRequest) (models.Product, error) {
 	var product models.Product = models.Product{
-		ProductTypeID: productReq.ProductType.ID,
+		ProductTypeID: productReq.ProductTypeID,
 		Description:   productReq.Description,
 		Price:         productReq.Price,
 	}
@@ -58,7 +58,7 @@ func (pr *ProductRepositoryImpl) Update(productReq models.ProductRequest, id str
 		return models.Product{}, err
 	}
 
-	product.ProductTypeID = productReq.ProductType.ID
+	product.ProductTypeID = productReq.ProductTypeID
 	product.Description = productReq.Description
 	product.Price = productReq.Price
 
