@@ -3,12 +3,17 @@ package repositories
 import (
 	"aquaculture/database"
 	"aquaculture/models"
+	"strconv"
 )
 
-type TransactionDetailRepositoryImpl struct{}
+type TransactionDetailRepositoryImpl struct {
+	productRepo ProductRepository
+}
 
 func InitTransactionDetailRepository() TransactionDetailRepository {
-	return &TransactionDetailRepositoryImpl{}
+	return &TransactionDetailRepositoryImpl{
+		productRepo: InitProductRepository(),
+	}
 }
 
 func (tdr *TransactionDetailRepositoryImpl) GetAll() ([]models.TransactionDetail, error) {
@@ -32,11 +37,21 @@ func (tdr *TransactionDetailRepositoryImpl) GetByID(id string) (models.Transacti
 }
 
 func (tdr *TransactionDetailRepositoryImpl) Create(tdReq models.TransactionDetailRequest) (models.TransactionDetail, error) {
+	//find product by id
+	//amount=product price* quantity
+	//product repo
+	product, err := tdr.productRepo.GetByID(strconv.Itoa(int(tdReq.ProductID)))
+
+	if err != nil {
+		return models.TransactionDetail{}, err
+	}
+
+	amount := tdReq.Quantity * uint(product.Price)
 	var transactionDetail models.TransactionDetail = models.TransactionDetail{
 		TransactionID: tdReq.TransactionID,
 		ProductID:     tdReq.ProductID,
 		Quantity:      tdReq.Quantity,
-		Amount:        tdReq.Amount,
+		Amount:        amount,
 	}
 
 	result := database.DB.Create(&transactionDetail)
@@ -62,7 +77,6 @@ func (tdr *TransactionDetailRepositoryImpl) Update(tdReq models.TransactionDetai
 	transactionDetail.TransactionID = tdReq.TransactionID
 	transactionDetail.ProductID = tdReq.ProductID
 	transactionDetail.Quantity = tdReq.Quantity
-	transactionDetail.Amount = tdReq.Amount
 
 	if err := database.DB.Save(&transactionDetail).Error; err != nil {
 		return models.TransactionDetail{}, err

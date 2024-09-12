@@ -13,7 +13,6 @@ type TransactionDetailRequest struct {
 	TransactionID uint `json:"transaction_id" validate:"required"`
 	ProductID     uint `json:"product_id" validate:"required"`
 	Quantity      uint `json:"quantity" validate:"required"`
-	Amount        uint `json:"amount" validate:"required"`
 }
 
 func (t *TransactionRequest) Validate() error {
