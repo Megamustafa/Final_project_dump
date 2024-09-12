@@ -1,24 +1,45 @@
 package controllers
 
 import (
+	"aquaculture/middlewares"
 	"aquaculture/models"
 	"aquaculture/services"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
 
 type TransactionController struct {
-	service services.TransactionService
+	service     services.TransactionService
+	userService services.UserService
 }
 
 func InitTransactionController() TransactionController {
 	return TransactionController{
-		service: services.InitTransactionService(),
+		service:     services.InitTransactionService(),
+		userService: services.InitUserService(models.JWTOptions{}),
 	}
+}
+func verifyUserT(c echo.Context, tc *TransactionController) error {
+	claim, err := middlewares.GetUser(c)
+	if err != nil {
+		return err
+	}
+	user, err := tc.userService.GetUserInfo(strconv.Itoa(claim.ID))
+	if err != nil && user.ID == 0 {
+		return err
+	}
+	return nil
 }
 
 func (tc *TransactionController) GetAll(c echo.Context) error {
+	if err := verifyUserT(c, tc); err != nil {
+		return c.JSON(http.StatusBadRequest, models.Response[string]{
+			Status:  "failed",
+			Message: "invalid request",
+		})
+	}
 	transactions, err := tc.service.GetAll()
 
 	if err != nil {
@@ -37,7 +58,12 @@ func (tc *TransactionController) GetAll(c echo.Context) error {
 
 func (tc *TransactionController) GetByID(c echo.Context) error {
 	transactionID := c.Param("id")
-
+	if err := verifyUserT(c, tc); err != nil {
+		return c.JSON(http.StatusBadRequest, models.Response[string]{
+			Status:  "failed",
+			Message: "invalid request",
+		})
+	}
 	transaction, err := tc.service.GetByID(transactionID)
 
 	if err != nil {

@@ -1,21 +1,37 @@
 package controllers
 
 import (
+	"aquaculture/middlewares"
 	"aquaculture/models"
 	"aquaculture/services"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
 
 type ProductController struct {
-	service services.ProductService
+	service     services.ProductService
+	userService services.UserService
 }
 
 func InitProductController() ProductController {
 	return ProductController{
-		service: services.InitProductService(),
+		service:     services.InitProductService(),
+		userService: services.InitUserService(models.JWTOptions{}),
 	}
+}
+
+func verifyAdminP(c echo.Context, pc *ProductController) error {
+	claim, err := middlewares.GetUser(c)
+	if err != nil {
+		return err
+	}
+	admin, err := pc.userService.GetAdminInfo(strconv.Itoa(claim.ID))
+	if err != nil && admin.ID == 0 {
+		return err
+	}
+	return nil
 }
 
 func (pc *ProductController) GetAll(c echo.Context) error {
@@ -57,6 +73,13 @@ func (pc *ProductController) GetByID(c echo.Context) error {
 func (pc *ProductController) Create(c echo.Context) error {
 	var productReq models.ProductRequest
 
+	if err := verifyAdminP(c, pc); err != nil {
+		return c.JSON(http.StatusBadRequest, models.Response[string]{
+			Status:  "failed",
+			Message: "invalid request",
+		})
+	}
+
 	if err := c.Bind(&productReq); err != nil {
 		return c.JSON(http.StatusBadRequest, models.Response[string]{
 			Status:  "failed",
@@ -92,6 +115,12 @@ func (pc *ProductController) Create(c echo.Context) error {
 func (pc *ProductController) Update(c echo.Context) error {
 	var productReq models.ProductRequest
 
+	if err := verifyAdminP(c, pc); err != nil {
+		return c.JSON(http.StatusBadRequest, models.Response[string]{
+			Status:  "failed",
+			Message: "invalid request",
+		})
+	}
 	if err := c.Bind(&productReq); err != nil {
 		return c.JSON(http.StatusBadRequest, models.Response[string]{
 			Status:  "failed",
@@ -128,6 +157,13 @@ func (pc *ProductController) Update(c echo.Context) error {
 
 func (pc *ProductController) Delete(c echo.Context) error {
 	productID := c.Param("id")
+
+	if err := verifyAdminP(c, pc); err != nil {
+		return c.JSON(http.StatusBadRequest, models.Response[string]{
+			Status:  "failed",
+			Message: "invalid request",
+		})
+	}
 
 	err := pc.service.Delete(productID)
 

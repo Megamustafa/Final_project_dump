@@ -1,21 +1,37 @@
 package controllers
 
 import (
+	"aquaculture/middlewares"
 	"aquaculture/models"
 	"aquaculture/services"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
 
 type ArticleController struct {
-	service services.ArticleService
+	service     services.ArticleService
+	userService services.UserService
 }
 
 func InitArticleController() ArticleController {
 	return ArticleController{
-		service: services.InitArticleService(),
+		service:     services.InitArticleService(),
+		userService: services.InitUserService(models.JWTOptions{}),
 	}
+}
+
+func verifyAdminA(c echo.Context, ac *ArticleController) error {
+	claim, err := middlewares.GetUser(c)
+	if err != nil {
+		return err
+	}
+	admin, err := ac.userService.GetAdminInfo(strconv.Itoa(claim.ID))
+	if err != nil && admin.ID == 0 {
+		return err
+	}
+	return nil
 }
 
 func (ac *ArticleController) GetAll(c echo.Context) error {
@@ -56,6 +72,12 @@ func (ac *ArticleController) GetByID(c echo.Context) error {
 
 func (ac *ArticleController) Create(c echo.Context) error {
 	var aReq models.ArticleRequest
+	if err := verifyAdminA(c, ac); err != nil {
+		return c.JSON(http.StatusBadRequest, models.Response[string]{
+			Status:  "failed",
+			Message: "invalid request",
+		})
+	}
 
 	if err := c.Bind(&aReq); err != nil {
 		return c.JSON(http.StatusBadRequest, models.Response[string]{
@@ -91,6 +113,12 @@ func (ac *ArticleController) Create(c echo.Context) error {
 
 func (ac *ArticleController) Update(c echo.Context) error {
 	var aReq models.ArticleRequest
+	if err := verifyAdminA(c, ac); err != nil {
+		return c.JSON(http.StatusBadRequest, models.Response[string]{
+			Status:  "failed",
+			Message: "invalid request",
+		})
+	}
 
 	if err := c.Bind(&aReq); err != nil {
 		return c.JSON(http.StatusBadRequest, models.Response[string]{
@@ -128,6 +156,12 @@ func (ac *ArticleController) Update(c echo.Context) error {
 
 func (ac *ArticleController) Delete(c echo.Context) error {
 	articleID := c.Param("id")
+	if err := verifyAdminA(c, ac); err != nil {
+		return c.JSON(http.StatusBadRequest, models.Response[string]{
+			Status:  "failed",
+			Message: "invalid request",
+		})
+	}
 
 	err := ac.service.Delete(articleID)
 

@@ -1,21 +1,36 @@
 package controllers
 
 import (
+	"aquaculture/middlewares"
 	"aquaculture/models"
 	"aquaculture/services"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
 
 type FarmTypeController struct {
-	service services.FarmTypeService
+	service     services.FarmTypeService
+	userService services.UserService
 }
 
 func InitFarmTypeController() FarmTypeController {
 	return FarmTypeController{
-		service: services.InitFarmTypeService(),
+		service:     services.InitFarmTypeService(),
+		userService: services.InitUserService(models.JWTOptions{}),
 	}
+}
+func verifyAdminFT(c echo.Context, ftc *FarmTypeController) error {
+	claim, err := middlewares.GetUser(c)
+	if err != nil {
+		return err
+	}
+	admin, err := ftc.userService.GetAdminInfo(strconv.Itoa(claim.ID))
+	if err != nil && admin.ID == 0 {
+		return err
+	}
+	return nil
 }
 
 func (ftc *FarmTypeController) GetAll(c echo.Context) error {
@@ -56,6 +71,12 @@ func (ftc *FarmTypeController) GetByID(c echo.Context) error {
 
 func (ftc *FarmTypeController) Create(c echo.Context) error {
 	var ftReq models.FarmTypeRequest
+	if err := verifyAdminFT(c, ftc); err != nil {
+		return c.JSON(http.StatusBadRequest, models.Response[string]{
+			Status:  "failed",
+			Message: "invalid request",
+		})
+	}
 
 	if err := c.Bind(&ftReq); err != nil {
 		return c.JSON(http.StatusBadRequest, models.Response[string]{
@@ -91,7 +112,12 @@ func (ftc *FarmTypeController) Create(c echo.Context) error {
 
 func (ftc *FarmTypeController) Update(c echo.Context) error {
 	var ftReq models.FarmTypeRequest
-
+	if err := verifyAdminFT(c, ftc); err != nil {
+		return c.JSON(http.StatusBadRequest, models.Response[string]{
+			Status:  "failed",
+			Message: "invalid request",
+		})
+	}
 	if err := c.Bind(&ftReq); err != nil {
 		return c.JSON(http.StatusBadRequest, models.Response[string]{
 			Status:  "failed",
@@ -128,6 +154,12 @@ func (ftc *FarmTypeController) Update(c echo.Context) error {
 
 func (ftc *FarmTypeController) Delete(c echo.Context) error {
 	farmTypeID := c.Param("id")
+	if err := verifyAdminFT(c, ftc); err != nil {
+		return c.JSON(http.StatusBadRequest, models.Response[string]{
+			Status:  "failed",
+			Message: "invalid request",
+		})
+	}
 
 	err := ftc.service.Delete(farmTypeID)
 

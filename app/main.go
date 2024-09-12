@@ -1,9 +1,18 @@
 package main
 
-import "github.com/labstack/echo/v4"
+import (
+	"aquaculture/database"
+	"aquaculture/routes"
+
+	"github.com/labstack/echo/v4"
+)
 
 func main() {
-	e := echo.New()
-	e.Logger.Fatal(e.Start(":1323"))
+	database.InitDB()
 
+	e := echo.New()
+
+	routes.SetupRoutes(e)
+
+	e.Logger.Fatal(e.Start(":1323"))
 }

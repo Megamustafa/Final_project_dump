@@ -1,21 +1,37 @@
 package controllers
 
 import (
+	"aquaculture/middlewares"
 	"aquaculture/models"
 	"aquaculture/services"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
 
 type AquacultureFarmsController struct {
-	service services.AquacultureFarmsService
+	service     services.AquacultureFarmsService
+	userService services.UserService
 }
 
 func InitAquacultureFarmsController() AquacultureFarmsController {
 	return AquacultureFarmsController{
-		service: services.InitAquacultureFarmsService(),
+		service:     services.InitAquacultureFarmsService(),
+		userService: services.InitUserService(models.JWTOptions{}),
 	}
+}
+
+func verifyAdminAF(c echo.Context, afc *AquacultureFarmsController) error {
+	claim, err := middlewares.GetUser(c)
+	if err != nil {
+		return err
+	}
+	admin, err := afc.userService.GetAdminInfo(strconv.Itoa(claim.ID))
+	if err != nil && admin.ID == 0 {
+		return err
+	}
+	return nil
 }
 
 func (afc *AquacultureFarmsController) GetAll(c echo.Context) error {
@@ -57,6 +73,13 @@ func (afc *AquacultureFarmsController) GetByID(c echo.Context) error {
 func (afc *AquacultureFarmsController) Create(c echo.Context) error {
 	var afReq models.AquacultureFarmsRequest
 
+	if err := verifyAdminAF(c, afc); err != nil {
+		return c.JSON(http.StatusBadRequest, models.Response[string]{
+			Status:  "failed",
+			Message: "invalid request",
+		})
+	}
+
 	if err := c.Bind(&afReq); err != nil {
 		return c.JSON(http.StatusBadRequest, models.Response[string]{
 			Status:  "failed",
@@ -92,6 +115,12 @@ func (afc *AquacultureFarmsController) Create(c echo.Context) error {
 func (afc *AquacultureFarmsController) Update(c echo.Context) error {
 	var afReq models.AquacultureFarmsRequest
 
+	if err := verifyAdminAF(c, afc); err != nil {
+		return c.JSON(http.StatusBadRequest, models.Response[string]{
+			Status:  "failed",
+			Message: "invalid request",
+		})
+	}
 	if err := c.Bind(&afReq); err != nil {
 		return c.JSON(http.StatusBadRequest, models.Response[string]{
 			Status:  "failed",
@@ -128,6 +157,13 @@ func (afc *AquacultureFarmsController) Update(c echo.Context) error {
 
 func (afc *AquacultureFarmsController) Delete(c echo.Context) error {
 	aquaculturefarmID := c.Param("id")
+
+	if err := verifyAdminAF(c, afc); err != nil {
+		return c.JSON(http.StatusBadRequest, models.Response[string]{
+			Status:  "failed",
+			Message: "invalid request",
+		})
+	}
 
 	err := afc.service.Delete(aquaculturefarmID)
 

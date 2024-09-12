@@ -1,21 +1,37 @@
 package controllers
 
 import (
+	"aquaculture/middlewares"
 	"aquaculture/models"
 	"aquaculture/services"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
 
 type ProductTypeController struct {
-	service services.ProductTypeService
+	service     services.ProductTypeService
+	userService services.UserService
 }
 
 func InitProductTypeController() ProductTypeController {
 	return ProductTypeController{
-		service: services.InitProductTypeService(),
+		service:     services.InitProductTypeService(),
+		userService: services.InitUserService(models.JWTOptions{}),
 	}
+}
+
+func verifyAdminPT(c echo.Context, ptc *ProductTypeController) error {
+	claim, err := middlewares.GetUser(c)
+	if err != nil {
+		return err
+	}
+	admin, err := ptc.userService.GetAdminInfo(strconv.Itoa(claim.ID))
+	if err != nil && admin.ID == 0 {
+		return err
+	}
+	return nil
 }
 
 func (ptc *ProductTypeController) GetAll(c echo.Context) error {
@@ -56,6 +72,12 @@ func (ptc *ProductTypeController) GetByID(c echo.Context) error {
 
 func (ptc *ProductTypeController) Create(c echo.Context) error {
 	var ptReq models.ProductTypeRequest
+	if err := verifyAdminPT(c, ptc); err != nil {
+		return c.JSON(http.StatusBadRequest, models.Response[string]{
+			Status:  "failed",
+			Message: "invalid request",
+		})
+	}
 
 	if err := c.Bind(&ptReq); err != nil {
 		return c.JSON(http.StatusBadRequest, models.Response[string]{
@@ -91,7 +113,12 @@ func (ptc *ProductTypeController) Create(c echo.Context) error {
 
 func (ptc *ProductTypeController) Update(c echo.Context) error {
 	var ptReq models.ProductTypeRequest
-
+	if err := verifyAdminPT(c, ptc); err != nil {
+		return c.JSON(http.StatusBadRequest, models.Response[string]{
+			Status:  "failed",
+			Message: "invalid request",
+		})
+	}
 	if err := c.Bind(&ptReq); err != nil {
 		return c.JSON(http.StatusBadRequest, models.Response[string]{
 			Status:  "failed",
@@ -128,7 +155,12 @@ func (ptc *ProductTypeController) Update(c echo.Context) error {
 
 func (ptc *ProductTypeController) Delete(c echo.Context) error {
 	productTypeID := c.Param("id")
-
+	if err := verifyAdminPT(c, ptc); err != nil {
+		return c.JSON(http.StatusBadRequest, models.Response[string]{
+			Status:  "failed",
+			Message: "invalid request",
+		})
+	}
 	err := ptc.service.Delete(productTypeID)
 
 	if err != nil {

@@ -1,25 +1,40 @@
 package controllers
 
 import (
+	"aquaculture/middlewares"
 	"aquaculture/models"
 	"aquaculture/services"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
 
 type FarmController struct {
-	service services.FarmService
+	service     services.FarmService
+	userService services.UserService
 }
 
 func InitFarmController() FarmController {
 	return FarmController{
-		service: services.InitFarmService(),
+		service:     services.InitFarmService(),
+		userService: services.InitUserService(models.JWTOptions{}),
 	}
 }
+func verifyAdminF(c echo.Context, fc *FarmController) error {
+	claim, err := middlewares.GetUser(c)
+	if err != nil {
+		return err
+	}
+	admin, err := fc.userService.GetAdminInfo(strconv.Itoa(claim.ID))
+	if err != nil && admin.ID == 0 {
+		return err
+	}
+	return nil
+}
 
-func (pc *FarmController) GetAll(c echo.Context) error {
-	farms, err := pc.service.GetAll()
+func (fc *FarmController) GetAll(c echo.Context) error {
+	farms, err := fc.service.GetAll()
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, models.Response[string]{
@@ -35,10 +50,10 @@ func (pc *FarmController) GetAll(c echo.Context) error {
 	})
 }
 
-func (pc *FarmController) GetByID(c echo.Context) error {
+func (fc *FarmController) GetByID(c echo.Context) error {
 	farmID := c.Param("id")
 
-	farm, err := pc.service.GetByID(farmID)
+	farm, err := fc.service.GetByID(farmID)
 
 	if err != nil {
 		return c.JSON(http.StatusNotFound, models.Response[string]{
@@ -54,9 +69,14 @@ func (pc *FarmController) GetByID(c echo.Context) error {
 	})
 }
 
-func (pc *FarmController) Create(c echo.Context) error {
+func (fc *FarmController) Create(c echo.Context) error {
 	var farmReq models.FarmRequest
-
+	if err := verifyAdminF(c, fc); err != nil {
+		return c.JSON(http.StatusBadRequest, models.Response[string]{
+			Status:  "failed",
+			Message: "invalid request",
+		})
+	}
 	if err := c.Bind(&farmReq); err != nil {
 		return c.JSON(http.StatusBadRequest, models.Response[string]{
 			Status:  "failed",
@@ -73,7 +93,7 @@ func (pc *FarmController) Create(c echo.Context) error {
 		})
 	}
 
-	farm, err := pc.service.Create(farmReq)
+	farm, err := fc.service.Create(farmReq)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, models.Response[string]{
@@ -89,8 +109,14 @@ func (pc *FarmController) Create(c echo.Context) error {
 	})
 }
 
-func (pc *FarmController) Update(c echo.Context) error {
+func (fc *FarmController) Update(c echo.Context) error {
 	var farmReq models.FarmRequest
+	if err := verifyAdminF(c, fc); err != nil {
+		return c.JSON(http.StatusBadRequest, models.Response[string]{
+			Status:  "failed",
+			Message: "invalid request",
+		})
+	}
 
 	if err := c.Bind(&farmReq); err != nil {
 		return c.JSON(http.StatusBadRequest, models.Response[string]{
@@ -110,7 +136,7 @@ func (pc *FarmController) Update(c echo.Context) error {
 		})
 	}
 
-	farm, err := pc.service.Update(farmReq, farmID)
+	farm, err := fc.service.Update(farmReq, farmID)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, models.Response[string]{
@@ -126,10 +152,15 @@ func (pc *FarmController) Update(c echo.Context) error {
 	})
 }
 
-func (pc *FarmController) Delete(c echo.Context) error {
+func (fc *FarmController) Delete(c echo.Context) error {
 	farmID := c.Param("id")
-
-	err := pc.service.Delete(farmID)
+	if err := verifyAdminF(c, fc); err != nil {
+		return c.JSON(http.StatusBadRequest, models.Response[string]{
+			Status:  "failed",
+			Message: "invalid request",
+		})
+	}
+	err := fc.service.Delete(farmID)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, models.Response[string]{
