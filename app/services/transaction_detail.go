@@ -23,10 +23,10 @@ func (tds *TransactionDetailService) GetByID(id string) (models.TransactionDetai
 	return tds.repository.GetByID(id)
 }
 
-func (tds *TransactionDetailService) Create(tReq models.TransactionDetailRequest) (models.TransactionDetail, error) {
-	return tds.repository.Create(tReq)
+func (tds *TransactionDetailService) Create(tdReq models.TransactionDetailRequest) (models.TransactionDetail, error) {
+	return tds.repository.Create(tdReq)
 }
 
-func (tds *TransactionDetailService) Update(tReq models.TransactionDetailRequest, id string) (models.TransactionDetail, error) {
-	return tds.repository.Update(tReq, id)
+func (tds *TransactionDetailService) Update(tdReq models.TransactionDetailRequest, id string) (models.TransactionDetail, error) {
+	return tds.repository.Update(tdReq, id)
 }

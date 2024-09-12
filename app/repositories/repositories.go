@@ -55,3 +55,19 @@ type TransactionDetailRepository interface {
 	Create(tdReq models.TransactionDetailRequest) (models.TransactionDetail, error)
 	Update(tdReq models.TransactionDetailRequest, id string) (models.TransactionDetail, error)
 }
+
+type ArticleRepository interface {
+	GetAll() ([]models.Article, error)
+	GetByID(id string) (models.Article, error)
+	Create(aReq models.ArticleRequest) (models.Article, error)
+	Update(aReq models.ArticleRequest, id string) (models.Article, error)
+	Delete(id string) error
+}
+
+type UserRepository interface {
+	Register(registerReq models.RegisterRequest) (models.User, error)
+	GetByEmailUser(loginReq models.LoginRequest) (models.User, error)
+	GetByEmailAdmin(loginReq models.LoginRequest) (models.Admin, error)
+	GetUserInfo(id string) (models.User, error)
+	GetAdminInfo(id string) (models.Admin, error)
+}
