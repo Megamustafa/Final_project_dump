@@ -5,13 +5,13 @@ import (
 	"aquaculture/models"
 )
 
-type ProductTypeRepoistoryImpl struct{}
+type ProductTypeRepositoryImpl struct{}
 
-func InitProductTypeRepoistory() ProductTypeRepoistory {
-	return &ProductTypeRepoistoryImpl{}
+func InitProductTypeRepository() ProductTypeRepository {
+	return &ProductTypeRepositoryImpl{}
 }
 
-func (ptr *ProductTypeRepoistoryImpl) GetAll() ([]models.ProductType, error) {
+func (ptr *ProductTypeRepositoryImpl) GetAll() ([]models.ProductType, error) {
 	var productTypes []models.ProductType
 
 	if err := database.DB.Find(&productTypes).Error; err != nil {
@@ -21,7 +21,7 @@ func (ptr *ProductTypeRepoistoryImpl) GetAll() ([]models.ProductType, error) {
 	return productTypes, nil
 }
 
-func (ptr *ProductTypeRepoistoryImpl) GetByID(id string) (models.ProductType, error) {
+func (ptr *ProductTypeRepositoryImpl) GetByID(id string) (models.ProductType, error) {
 	var productType models.ProductType
 
 	if err := database.DB.First(&productType, "id = ?", id).Error; err != nil {
@@ -31,7 +31,7 @@ func (ptr *ProductTypeRepoistoryImpl) GetByID(id string) (models.ProductType, er
 	return productType, nil
 }
 
-func (ptr *ProductTypeRepoistoryImpl) Create(ptReq models.ProductTypeRequest) (models.ProductType, error) {
+func (ptr *ProductTypeRepositoryImpl) Create(ptReq models.ProductTypeRequest) (models.ProductType, error) {
 	var productType models.ProductType = models.ProductType{
 		Name: ptReq.Name,
 	}
@@ -49,7 +49,7 @@ func (ptr *ProductTypeRepoistoryImpl) Create(ptReq models.ProductTypeRequest) (m
 	return productType, nil
 }
 
-func (ptr *ProductTypeRepoistoryImpl) Update(ptReq models.ProductTypeRequest, id string) (models.ProductType, error) {
+func (ptr *ProductTypeRepositoryImpl) Update(ptReq models.ProductTypeRequest, id string) (models.ProductType, error) {
 	productType, err := ptr.GetByID(id)
 
 	if err != nil {
@@ -65,7 +65,7 @@ func (ptr *ProductTypeRepoistoryImpl) Update(ptReq models.ProductTypeRequest, id
 	return productType, nil
 }
 
-func (ptr *ProductTypeRepoistoryImpl) Delete(id string) error {
+func (ptr *ProductTypeRepositoryImpl) Delete(id string) error {
 	productType, err := ptr.GetByID(id)
 
 	if err != nil {

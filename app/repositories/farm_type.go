@@ -5,13 +5,13 @@ import (
 	"aquaculture/models"
 )
 
-type FarmTypeRepoistoryImpl struct{}
+type FarmTypeRepositoryImpl struct{}
 
-func InitFarmTypeRepoistory() FarmTypeRepoistory {
-	return &FarmTypeRepoistoryImpl{}
+func InitFarmTypeRepository() FarmTypeRepository {
+	return &FarmTypeRepositoryImpl{}
 }
 
-func (ftr *FarmTypeRepoistoryImpl) GetAll() ([]models.FarmType, error) {
+func (ftr *FarmTypeRepositoryImpl) GetAll() ([]models.FarmType, error) {
 	var farmTypes []models.FarmType
 
 	if err := database.DB.Find(&farmTypes).Error; err != nil {
@@ -21,7 +21,7 @@ func (ftr *FarmTypeRepoistoryImpl) GetAll() ([]models.FarmType, error) {
 	return farmTypes, nil
 }
 
-func (ftr *FarmTypeRepoistoryImpl) GetByID(id string) (models.FarmType, error) {
+func (ftr *FarmTypeRepositoryImpl) GetByID(id string) (models.FarmType, error) {
 	var farmType models.FarmType
 
 	if err := database.DB.First(&farmType, "id = ?", id).Error; err != nil {
@@ -31,7 +31,7 @@ func (ftr *FarmTypeRepoistoryImpl) GetByID(id string) (models.FarmType, error) {
 	return farmType, nil
 }
 
-func (ftr *FarmTypeRepoistoryImpl) Create(ftReq models.FarmTypeRequest) (models.FarmType, error) {
+func (ftr *FarmTypeRepositoryImpl) Create(ftReq models.FarmTypeRequest) (models.FarmType, error) {
 	var farmType models.FarmType = models.FarmType{
 		Name: ftReq.Name,
 	}
@@ -49,7 +49,7 @@ func (ftr *FarmTypeRepoistoryImpl) Create(ftReq models.FarmTypeRequest) (models.
 	return farmType, nil
 }
 
-func (ftr *FarmTypeRepoistoryImpl) Update(ftReq models.FarmTypeRequest, id string) (models.FarmType, error) {
+func (ftr *FarmTypeRepositoryImpl) Update(ftReq models.FarmTypeRequest, id string) (models.FarmType, error) {
 	farmType, err := ftr.GetByID(id)
 
 	if err != nil {
@@ -65,7 +65,7 @@ func (ftr *FarmTypeRepoistoryImpl) Update(ftReq models.FarmTypeRequest, id strin
 	return farmType, nil
 }
 
-func (ftr *FarmTypeRepoistoryImpl) Delete(id string) error {
+func (ftr *FarmTypeRepositoryImpl) Delete(id string) error {
 	farmType, err := ftr.GetByID(id)
 
 	if err != nil {

@@ -18,7 +18,7 @@ type AquacultureFarmsRepository interface {
 	Delete(id string) error
 }
 
-type ProductTypeRepoistory interface {
+type ProductTypeRepository interface {
 	GetAll() ([]models.ProductType, error)
 	GetByID(id string) (models.ProductType, error)
 	Create(ptReq models.ProductTypeRequest) (models.ProductType, error)
@@ -26,10 +26,32 @@ type ProductTypeRepoistory interface {
 	Delete(id string) error
 }
 
-type FarmTypeRepoistory interface {
+type FarmTypeRepository interface {
 	GetAll() ([]models.FarmType, error)
 	GetByID(id string) (models.FarmType, error)
 	Create(ftReq models.FarmTypeRequest) (models.FarmType, error)
 	Update(ftReq models.FarmTypeRequest, id string) (models.FarmType, error)
 	Delete(id string) error
+}
+
+type FarmRepository interface {
+	GetAll() ([]models.Farm, error)
+	GetByID(id string) (models.Farm, error)
+	Create(farmReq models.FarmRequest) (models.Farm, error)
+	Update(farmReq models.FarmRequest, id string) (models.Farm, error)
+	Delete(id string) error
+}
+
+type TransactionRepository interface {
+	GetAll() ([]models.Transaction, error)
+	GetByID(id string) (models.Transaction, error)
+	Create(tReq models.TransactionRequest) (models.Transaction, error)
+	Update(tReq models.TransactionRequest, id string) (models.Transaction, error)
+}
+
+type TransactionDetailRepository interface {
+	GetAll() ([]models.TransactionDetail, error)
+	GetByID(id string) (models.TransactionDetail, error)
+	Create(tdReq models.TransactionDetailRequest) (models.TransactionDetail, error)
+	Update(tdReq models.TransactionDetailRequest, id string) (models.TransactionDetail, error)
 }

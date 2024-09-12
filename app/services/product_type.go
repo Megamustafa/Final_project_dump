@@ -6,12 +6,12 @@ import (
 )
 
 type ProductTypeService struct {
-	repository repositories.ProductTypeRepoistory
+	repository repositories.ProductTypeRepository
 }
 
 func InitProductTypeService() ProductTypeService {
 	return ProductTypeService{
-		repository: &repositories.ProductTypeRepoistoryImpl{},
+		repository: &repositories.ProductTypeRepositoryImpl{},
 	}
 }
 
