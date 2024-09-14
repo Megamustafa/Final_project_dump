@@ -21,8 +21,11 @@ func (ur *UserRepositoryImpl) Register(registerReq models.RegisterRequest) (mode
 	}
 
 	var user models.User = models.User{
-		Email:    registerReq.Email,
-		Password: string(password),
+		Email:       registerReq.Email,
+		Password:    string(password),
+		FullName:    registerReq.FullName,
+		Address:     registerReq.Address,
+		PhoneNumber: registerReq.PhoneNumber,
 	}
 
 	result := database.DB.Create(&user)
