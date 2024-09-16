@@ -9,7 +9,7 @@ type ProductTypeRequest struct {
 }
 
 type ProductRequest struct {
-	ProductTypeID uint   `json:"type_ID" validate:"required"`
+	ProductTypeID uint   `json:"product_type_ID" validate:"required"`
 	Description   string `json:"description" validate:"required"`
 	Price         int    `json:"price" validate:"required"`
 }

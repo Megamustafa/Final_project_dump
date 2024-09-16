@@ -24,7 +24,7 @@ func (tr *TransactionRepositoryImpl) GetAll() ([]models.Transaction, error) {
 func (tr *TransactionRepositoryImpl) GetByID(id string) (models.Transaction, error) {
 	var transaction models.Transaction
 
-	if err := database.DB.First(&transaction, "id = ?", id).Error; err != nil {
+	if err := database.DB.Preload("TransactionDetails").First(&transaction, "id = ?", id).Error; err != nil {
 		return models.Transaction{}, err
 	}
 
@@ -45,7 +45,7 @@ func (tr *TransactionRepositoryImpl) Create(tReq models.TransactionRequest) (mod
 		return models.Transaction{}, err
 	}
 
-	if err := result.Last(&transaction).Error; err != nil {
+	if err := result.Preload("TransactionDetails").Last(&transaction).Error; err != nil {
 		return models.Transaction{}, err
 	}
 
@@ -64,7 +64,7 @@ func (tr *TransactionRepositoryImpl) Update(tReq models.TransactionRequest, id s
 	transaction.Status = tReq.Status
 	transaction.PaymentMethod = tReq.PaymentMethod
 
-	if err := database.DB.Save(&transaction).Error; err != nil {
+	if err := database.DB.Preload("TransactionDetails").Save(&transaction).Error; err != nil {
 		return models.Transaction{}, err
 	}
 

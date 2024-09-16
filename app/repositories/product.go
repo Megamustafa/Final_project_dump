@@ -14,7 +14,7 @@ func InitProductRepository() ProductRepository {
 func (pr *ProductRepositoryImpl) GetAll() ([]models.Product, error) {
 	var products []models.Product
 
-	if err := database.DB.Find(&products).Error; err != nil {
+	if err := database.DB.Preload("ProductType").Find(&products).Error; err != nil {
 		return []models.Product{}, err
 	}
 
@@ -24,7 +24,7 @@ func (pr *ProductRepositoryImpl) GetAll() ([]models.Product, error) {
 func (pr *ProductRepositoryImpl) GetByID(id string) (models.Product, error) {
 	var product models.Product
 
-	if err := database.DB.First(&product, "id = ?", id).Error; err != nil {
+	if err := database.DB.Preload("ProductType").First(&product, "id = ?", id).Error; err != nil {
 		return models.Product{}, err
 	}
 
@@ -44,7 +44,7 @@ func (pr *ProductRepositoryImpl) Create(productReq models.ProductRequest) (model
 		return models.Product{}, err
 	}
 
-	if err := result.Last(&product).Error; err != nil {
+	if err := result.Preload("ProductType").Last(&product).Error; err != nil {
 		return models.Product{}, err
 	}
 
@@ -62,7 +62,7 @@ func (pr *ProductRepositoryImpl) Update(productReq models.ProductRequest, id str
 	product.Description = productReq.Description
 	product.Price = productReq.Price
 
-	if err := database.DB.Save(&product).Error; err != nil {
+	if err := database.DB.Preload("ProductType").Save(&product).Error; err != nil {
 		return models.Product{}, err
 	}
 

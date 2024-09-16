@@ -14,7 +14,7 @@ func InitFarmRepository() FarmRepository {
 func (fr *FarmRepositoryImpl) GetAll() ([]models.Farm, error) {
 	var farms []models.Farm
 
-	if err := database.DB.Find(&farms).Error; err != nil {
+	if err := database.DB.Preload("FarmType").Find(&farms).Error; err != nil {
 		return []models.Farm{}, err
 	}
 
@@ -24,7 +24,7 @@ func (fr *FarmRepositoryImpl) GetAll() ([]models.Farm, error) {
 func (fr *FarmRepositoryImpl) GetByID(id string) (models.Farm, error) {
 	var farm models.Farm
 
-	if err := database.DB.First(&farm, "id = ?", id).Error; err != nil {
+	if err := database.DB.Preload("FarmType").First(&farm, "id = ?", id).Error; err != nil {
 		return models.Farm{}, err
 	}
 
@@ -44,7 +44,7 @@ func (fr *FarmRepositoryImpl) Create(farmReq models.FarmRequest) (models.Farm, e
 		return models.Farm{}, err
 	}
 
-	if err := result.Last(&farm).Error; err != nil {
+	if err := result.Preload("FarmType").Last(&farm).Error; err != nil {
 		return models.Farm{}, err
 	}
 
@@ -62,7 +62,7 @@ func (fr *FarmRepositoryImpl) Update(farmReq models.FarmRequest, id string) (mod
 	farm.Description = farmReq.Description
 	farm.Price = farmReq.Price
 
-	if err := database.DB.Save(&farm).Error; err != nil {
+	if err := database.DB.Preload("FarmType").Save(&farm).Error; err != nil {
 		return models.Farm{}, err
 	}
 

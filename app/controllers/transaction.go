@@ -83,6 +83,13 @@ func (tc *TransactionController) GetByID(c echo.Context) error {
 func (tc *TransactionController) Create(c echo.Context) error {
 	var tReq models.TransactionRequest
 
+	if err := verifyUserT(c, tc); err != nil {
+		return c.JSON(http.StatusBadRequest, models.Response[string]{
+			Status:  "failed",
+			Message: "invalid request",
+		})
+	}
+
 	if err := c.Bind(&tReq); err != nil {
 		return c.JSON(http.StatusBadRequest, models.Response[string]{
 			Status:  "failed",
@@ -118,6 +125,12 @@ func (tc *TransactionController) Create(c echo.Context) error {
 func (tc *TransactionController) Update(c echo.Context) error {
 	var tReq models.TransactionRequest
 
+	if err := verifyUserT(c, tc); err != nil {
+		return c.JSON(http.StatusBadRequest, models.Response[string]{
+			Status:  "failed",
+			Message: "invalid request",
+		})
+	}
 	if err := c.Bind(&tReq); err != nil {
 		return c.JSON(http.StatusBadRequest, models.Response[string]{
 			Status:  "failed",

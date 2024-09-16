@@ -84,6 +84,13 @@ func (tdc *TransactionDetailController) GetByID(c echo.Context) error {
 func (tdc *TransactionDetailController) Create(c echo.Context) error {
 	var tdReq models.TransactionDetailRequest
 
+	if err := verifyUserTD(c, tdc); err != nil {
+		return c.JSON(http.StatusBadRequest, models.Response[string]{
+			Status:  "failed",
+			Message: "invalid request",
+		})
+	}
+
 	if err := c.Bind(&tdReq); err != nil {
 		return c.JSON(http.StatusBadRequest, models.Response[string]{
 			Status:  "failed",
@@ -118,6 +125,13 @@ func (tdc *TransactionDetailController) Create(c echo.Context) error {
 
 func (tdc *TransactionDetailController) Update(c echo.Context) error {
 	var tdReq models.TransactionDetailRequest
+
+	if err := verifyUserTD(c, tdc); err != nil {
+		return c.JSON(http.StatusBadRequest, models.Response[string]{
+			Status:  "failed",
+			Message: "invalid request",
+		})
+	}
 
 	if err := c.Bind(&tdReq); err != nil {
 		return c.JSON(http.StatusBadRequest, models.Response[string]{
