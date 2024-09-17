@@ -6,31 +6,31 @@ import (
 )
 
 type FarmTypeService struct {
-	repository repositories.FarmTypeRepository
+	Repository repositories.FarmTypeRepository
 }
 
 func InitFarmTypeService() FarmTypeService {
 	return FarmTypeService{
-		repository: &repositories.FarmTypeRepositoryImpl{},
+		Repository: &repositories.FarmTypeRepositoryImpl{},
 	}
 }
 
 func (fts *FarmTypeService) GetAll() ([]models.FarmType, error) {
-	return fts.repository.GetAll()
+	return fts.Repository.GetAll()
 }
 
 func (fts *FarmTypeService) GetByID(id string) (models.FarmType, error) {
-	return fts.repository.GetByID(id)
+	return fts.Repository.GetByID(id)
 }
 
 func (fts *FarmTypeService) Create(ftReq models.FarmTypeRequest) (models.FarmType, error) {
-	return fts.repository.Create(ftReq)
+	return fts.Repository.Create(ftReq)
 }
 
 func (fts *FarmTypeService) Update(ftReq models.FarmTypeRequest, id string) (models.FarmType, error) {
-	return fts.repository.Update(ftReq, id)
+	return fts.Repository.Update(ftReq, id)
 }
 
 func (fts *FarmTypeService) Delete(id string) error {
-	return fts.repository.Delete(id)
+	return fts.Repository.Delete(id)
 }

@@ -6,27 +6,27 @@ import (
 )
 
 type TransactionDetailService struct {
-	repository repositories.TransactionDetailRepository
+	Repository repositories.TransactionDetailRepository
 }
 
 func InitTransactionDetailService() TransactionDetailService {
 	return TransactionDetailService{
-		repository: &repositories.TransactionDetailRepositoryImpl{},
+		Repository: repositories.InitTransactionDetailRepository(),
 	}
 }
 
 func (tds *TransactionDetailService) GetAll() ([]models.TransactionDetail, error) {
-	return tds.repository.GetAll()
+	return tds.Repository.GetAll()
 }
 
 func (tds *TransactionDetailService) GetByID(id string) (models.TransactionDetail, error) {
-	return tds.repository.GetByID(id)
+	return tds.Repository.GetByID(id)
 }
 
 func (tds *TransactionDetailService) Create(tdReq models.TransactionDetailRequest) (models.TransactionDetail, error) {
-	return tds.repository.Create(tdReq)
+	return tds.Repository.Create(tdReq)
 }
 
 func (tds *TransactionDetailService) Update(tdReq models.TransactionDetailRequest, id string) (models.TransactionDetail, error) {
-	return tds.repository.Update(tdReq, id)
+	return tds.Repository.Update(tdReq, id)
 }

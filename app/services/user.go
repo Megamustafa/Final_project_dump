@@ -7,23 +7,23 @@ import (
 )
 
 type UserService struct {
-	repository repositories.UserRepository
+	Repository repositories.UserRepository
 	jwtOptions models.JWTOptions
 }
 
 func InitUserService(jwtOptions models.JWTOptions) UserService {
 	return UserService{
-		repository: &repositories.UserRepositoryImpl{},
+		Repository: &repositories.UserRepositoryImpl{},
 		jwtOptions: jwtOptions,
 	}
 }
 
 func (us *UserService) Register(registerReq models.RegisterRequest) (models.User, error) {
-	return us.repository.Register(registerReq)
+	return us.Repository.Register(registerReq)
 }
 
 func (us *UserService) LoginAdmin(loginReq models.LoginRequest) (string, error) {
-	admin, err := us.repository.GetByEmailAdmin(loginReq)
+	admin, err := us.Repository.GetByEmailAdmin(loginReq)
 
 	if err != nil {
 		return "", err
@@ -39,7 +39,7 @@ func (us *UserService) LoginAdmin(loginReq models.LoginRequest) (string, error) 
 }
 
 func (us *UserService) LoginUser(loginReq models.LoginRequest) (string, error) {
-	user, err := us.repository.GetByEmailUser(loginReq)
+	user, err := us.Repository.GetByEmailUser(loginReq)
 
 	if err != nil {
 		return "", err
@@ -55,9 +55,9 @@ func (us *UserService) LoginUser(loginReq models.LoginRequest) (string, error) {
 }
 
 func (us *UserService) GetUserInfo(id string) (models.User, error) {
-	return us.repository.GetUserInfo(id)
+	return us.Repository.GetUserInfo(id)
 }
 
 func (us *UserService) GetAdminInfo(id string) (models.Admin, error) {
-	return us.repository.GetAdminInfo(id)
+	return us.Repository.GetAdminInfo(id)
 }

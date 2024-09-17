@@ -6,31 +6,31 @@ import (
 )
 
 type AquacultureFarmsService struct {
-	repository repositories.AquacultureFarmsRepository
+	Repository repositories.AquacultureFarmsRepository
 }
 
 func InitAquacultureFarmsService() AquacultureFarmsService {
 	return AquacultureFarmsService{
-		repository: &repositories.AquacultureFarmsRepositoryImpl{},
+		Repository: &repositories.AquacultureFarmsRepositoryImpl{},
 	}
 }
 
 func (afs *AquacultureFarmsService) GetAll() ([]models.AquacultureFarms, error) {
-	return afs.repository.GetAll()
+	return afs.Repository.GetAll()
 }
 
 func (afs *AquacultureFarmsService) GetByID(id string) (models.AquacultureFarms, error) {
-	return afs.repository.GetByID(id)
+	return afs.Repository.GetByID(id)
 }
 
 func (afs *AquacultureFarmsService) Create(afReq models.AquacultureFarmsRequest) (models.AquacultureFarms, error) {
-	return afs.repository.Create(afReq)
+	return afs.Repository.Create(afReq)
 }
 
 func (afs *AquacultureFarmsService) Update(afReq models.AquacultureFarmsRequest, id string) (models.AquacultureFarms, error) {
-	return afs.repository.Update(afReq, id)
+	return afs.Repository.Update(afReq, id)
 }
 
 func (afs *AquacultureFarmsService) Delete(id string) error {
-	return afs.repository.Delete(id)
+	return afs.Repository.Delete(id)
 }

@@ -14,7 +14,7 @@ func InitTransactionRepository() TransactionRepository {
 func (tr *TransactionRepositoryImpl) GetAll() ([]models.Transaction, error) {
 	var transactions []models.Transaction
 
-	if err := database.DB.Find(&transactions).Error; err != nil {
+	if err := database.DB.Preload("TransactionDetails").Find(&transactions).Error; err != nil {
 		return []models.Transaction{}, err
 	}
 
@@ -34,7 +34,7 @@ func (tr *TransactionRepositoryImpl) GetByID(id string) (models.Transaction, err
 func (tr *TransactionRepositoryImpl) Create(tReq models.TransactionRequest) (models.Transaction, error) {
 	var transaction models.Transaction = models.Transaction{
 		UserID:        tReq.UserID,
-		TotalAmount:   tReq.TotalAmount,
+		TotalAmount:   0,
 		Status:        tReq.Status,
 		PaymentMethod: tReq.PaymentMethod,
 	}

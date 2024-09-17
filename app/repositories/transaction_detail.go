@@ -7,12 +7,14 @@ import (
 )
 
 type TransactionDetailRepositoryImpl struct {
-	productRepo ProductRepository
+	productRepo     ProductRepository
+	transactionRepo TransactionRepository
 }
 
 func InitTransactionDetailRepository() TransactionDetailRepository {
 	return &TransactionDetailRepositoryImpl{
-		productRepo: InitProductRepository(),
+		productRepo:     InitProductRepository(),
+		transactionRepo: InitTransactionRepository(),
 	}
 }
 
@@ -64,6 +66,26 @@ func (tdr *TransactionDetailRepositoryImpl) Create(tdReq models.TransactionDetai
 		return models.TransactionDetail{}, err
 	}
 
+	transactionData, err := tdr.transactionRepo.GetByID(strconv.Itoa(int(tdReq.TransactionID)))
+
+	if err != nil {
+		return models.TransactionDetail{}, err
+	}
+
+	currentDetails := transactionData.TransactionDetails
+
+	var totalAmounttmp uint
+
+	for _, detail := range currentDetails {
+		totalAmounttmp += detail.Amount
+	}
+
+	transactionData.TotalAmount = totalAmounttmp
+
+	if err := database.DB.Save(&transactionData).Error; err != nil {
+		return models.TransactionDetail{}, err
+	}
+
 	return transactionDetail, nil
 }
 
@@ -74,11 +96,38 @@ func (tdr *TransactionDetailRepositoryImpl) Update(tdReq models.TransactionDetai
 		return models.TransactionDetail{}, err
 	}
 
-	transactionDetail.TransactionID = tdReq.TransactionID
+	product, err := tdr.productRepo.GetByID(strconv.Itoa(int(tdReq.ProductID)))
+
+	if err != nil {
+		return models.TransactionDetail{}, err
+	}
+
+	amount := tdReq.Quantity * uint(product.Price)
+
 	transactionDetail.ProductID = tdReq.ProductID
 	transactionDetail.Quantity = tdReq.Quantity
+	transactionDetail.Amount = amount
 
 	if err := database.DB.Save(&transactionDetail).Error; err != nil {
+		return models.TransactionDetail{}, err
+	}
+
+	transactionData, err := tdr.transactionRepo.GetByID(strconv.Itoa(int(tdReq.TransactionID)))
+
+	if err != nil {
+		return models.TransactionDetail{}, err
+	}
+
+	currentDetails := transactionData.TransactionDetails
+	var totalAmounttmp uint
+
+	for _, detail := range currentDetails {
+		totalAmounttmp += detail.Amount
+	}
+
+	transactionData.TotalAmount = totalAmounttmp
+
+	if err := database.DB.Save(&transactionData).Error; err != nil {
 		return models.TransactionDetail{}, err
 	}
 

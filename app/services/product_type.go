@@ -6,31 +6,31 @@ import (
 )
 
 type ProductTypeService struct {
-	repository repositories.ProductTypeRepository
+	Repository repositories.ProductTypeRepository
 }
 
 func InitProductTypeService() ProductTypeService {
 	return ProductTypeService{
-		repository: &repositories.ProductTypeRepositoryImpl{},
+		Repository: &repositories.ProductTypeRepositoryImpl{},
 	}
 }
 
 func (pts *ProductTypeService) GetAll() ([]models.ProductType, error) {
-	return pts.repository.GetAll()
+	return pts.Repository.GetAll()
 }
 
 func (pts *ProductTypeService) GetByID(id string) (models.ProductType, error) {
-	return pts.repository.GetByID(id)
+	return pts.Repository.GetByID(id)
 }
 
 func (pts *ProductTypeService) Create(ptReq models.ProductTypeRequest) (models.ProductType, error) {
-	return pts.repository.Create(ptReq)
+	return pts.Repository.Create(ptReq)
 }
 
 func (pts *ProductTypeService) Update(ptReq models.ProductTypeRequest, id string) (models.ProductType, error) {
-	return pts.repository.Update(ptReq, id)
+	return pts.Repository.Update(ptReq, id)
 }
 
 func (pts *ProductTypeService) Delete(id string) error {
-	return pts.repository.Delete(id)
+	return pts.Repository.Delete(id)
 }
